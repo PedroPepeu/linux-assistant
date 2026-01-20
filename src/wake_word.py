@@ -18,7 +18,6 @@ def start_wake_word():
     while True:
         try:
             with microphone as source:
-                # listen() will wait until it hears a phrase
                 audio = recognizer.listen(source, timeout=None, phrase_time_limit=3)
 
             text = recognizer.recognize_google(audio).lower()
