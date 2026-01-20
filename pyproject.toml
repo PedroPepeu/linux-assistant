@@ -1,0 +1,16 @@
+[project]
+name = "gemini-linux-assistant"
+version = "1.0.0"
+dependencies = [
+    "google-genai",
+    "pyaudio",
+    "openwakeword"
+]
+
+[project.scripts]
+# This command 'linux-assistant-bin' will call the main() function in engine.py
+linux-assistant-bin = "assistant.engine:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

@@ -1,0 +1,12 @@
+[Unit]
+Description=Gemini Voice Assistant for Arch
+After=network.target pipewire.service
+
+[Service]
+ExecStart=/usr/bin/linux-assistant-bin
+Restart=on-failure
+Environment=PYTHONUNBUFFERED=1
+Environment=API_KEY_FILE=%h/.config/gemini-assistant/key.txt
+
+[Install]
+WantedBy=default.target
