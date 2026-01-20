@@ -9,6 +9,7 @@ def get_audio_input():
 
     with sr.Microphone() as source:
         print("\n[Listening...]")
+        # Adjust ambient noise fixed for all recognitions
         recognizer.adjust_for_ambient_noise(source, duration=0.5)
 
         try:
@@ -48,6 +49,9 @@ def start_wake_word():
                 while True:
                     command = get_audio_input()
                     print(f"Said: {command}")
+                    answer = ask_llm(command)
+                    print(f"Answer: {answer}")
+                    text_to_speech(answer)
 
         except sr.UnknownValueError:
             continue 
@@ -58,3 +62,37 @@ def start_wake_word():
 
 if __name__ == "__main__":
     start_wake_word()
+
+
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+load_dotenv()
+
+def ask_llm(prompt):
+    api_key = os.getenv("GOOGLE_API_KEY")
+
+    if not api_key:
+        return "Error: No API Key found in .env file"
+    
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel.get('gemini-1.5-flash')
+
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"LLM Error: {e}"
+
+import pyttsx3
+
+def text_to_speech(text):
+    engine = pyttsx3.init()
+
+    engine.setProperty('rate', 175)
+
+    try:
+        engine.say(text)
+        engine.runAndWait()
+    except Exception as e:
+        print(f"TTS Error: {e}")
