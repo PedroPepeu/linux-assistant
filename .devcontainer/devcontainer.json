@@ -1,11 +1,26 @@
 {
-  "image": "../Dockerfile",
-  "forwardPorts": [3000],
+  "name": "Linux Assistant Dev Container",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
   "customizations": {
     // Configure properties specific to VS Code.
     "vscode": {
       // Add the IDs of extensions you want installed when the container is created.
-      "extensions": ["ms-python.python"]
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylint"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      } 
     }
-  }
+  },
+  "runArgs": [
+    "--device=/dev/snd",
+    "-v", "/run/user/${localEnv:USER_ID}/pulse:/run/user/1000/pulse",
+    "-e", "PULSE_SERVER=unix:/run/user/1000/pulse/native"
+  ],
+  "remoteUser": "root"
 }
