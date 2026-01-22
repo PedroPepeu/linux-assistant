@@ -1,0 +1,6 @@
+pytest
+SpeechRecognition
+PyAudio
+google-genai
+pyttsx3
+python-dotenv
