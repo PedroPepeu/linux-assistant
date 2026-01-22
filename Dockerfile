@@ -18,4 +18,4 @@ COPY . .
 
 ENV PYTHONUNBUFFERED=1
 
-CMD [ "python", "src/wake_word.py" ]
+CMD [ "python", "-m", "src.main" ]
