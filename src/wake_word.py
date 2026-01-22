@@ -46,23 +46,21 @@ def start_wake_word():
 
             if WAKE_WORD in text:
                 print(">>> HELLO <<<")
-                while True:
-                    command = get_audio_input()
-                    print(f"Said: {command}")
+                
+                command = get_audio_input()
+                print(f"Said: {command}")
+                
+                if "Error" not in command:
                     answer = ask_llm(command)
                     print(f"Answer: {answer}")
                     text_to_speech(answer)
-
+                    
         except sr.UnknownValueError:
             continue 
         except sr.RequestError:
             print("Check internet.")
         except Exception as e:
             continue
-
-if __name__ == "__main__":
-    start_wake_word()
-
 
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -76,7 +74,7 @@ def ask_llm(prompt):
         return "Error: No API Key found in .env file"
     
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel.get('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-2.5-flash')
 
     try:
         response = model.generate_content(prompt)
@@ -96,3 +94,6 @@ def text_to_speech(text):
         engine.runAndWait()
     except Exception as e:
         print(f"TTS Error: {e}")
+
+if __name__ == "__main__":
+    start_wake_word()
