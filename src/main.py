@@ -1,38 +1,32 @@
-from src import Config
-from src.services import GeminiService, AudioService
+import sys
+from PyQt6.QtWidgets import QApplication
+from src.gui import MainWindow
+from src.workers import AssistantThread
 
 def main():
-    print("Initializating services...")
-    
-    try:
-        ai = GeminiService()
-        audio = AudioService()
+    # 1. Setup the Qt Application
+    app = QApplication(sys.argv)
+    app.setApplicationName("linux-assistant") # Important for Hyprland class matching
 
-        audio.calibrate()
+    # 2. Setup the Window
+    window = MainWindow()
+    window.show()
 
-        print(f"Ready! Listening for : `{Config.WAKE_WORD}`")
+    # 3. Setup the Worker Thread
+    assistant_thread = AssistantThread()
 
-        while True:
-            detected_text = audio.listen(phrase_time_limit=3)
+    # 4. Connect Signals (The Wiring)
+    # When the thread says "status_changed", call window.update_status
+    assistant_thread.status_changed.connect(window.update_status)
+    assistant_thread.user_spoke.connect(window.add_user_message)
+    assistant_thread.ai_spoke.connect(window.add_ai_message)
+    assistant_thread.error_occurred.connect(window.show_error)
 
-            if detected_text and Config.WAKE_WORD in detected_text:
-                print(">>> HELLO <<<")
-                audio.speak("Yes?")
+    # 5. Start the Thread
+    assistant_thread.start()
 
-                print("[Listening for command...]")
-                command = audio.listen(phrase_time_limit=10)
-
-                if command:
-                    print(f"You said: {command}")
-
-                    response = ai.get_response(command)
-
-                    audio.speak(response)
-                else:
-                    print("No command detected.")
-
-    except KeyboardInterrupt:
-        print("\nStopping...")
+    # 6. Execute the App Loop
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
     main()
